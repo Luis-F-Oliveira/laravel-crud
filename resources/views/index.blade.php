@@ -17,7 +17,7 @@
                         <h1 class="text-white fs-2">Consulta de eventos</h1>
                         <div class="text-white fs-5 border rounded p-1">
                             <i class="fa-solid fa-gears fa-flip-horizontal"></i>
-                            <span>Eventos em processamento   (0)</span>
+                            <span>Eventos em processamento <strong>( {{ \App\Models\Events::where('status', 0)->count() }} )</strong></span>
                         </div>
                     </div>
                 </div>
@@ -45,6 +45,16 @@
                     </div>
                 </form>
             </div>
+
+            @if(session('success'))
+                <div class="container">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            @endif
+
             <div class="container">
                 @if($events->isEmpty())
                    <h1>Nenhum evento encontrado.</h1>
@@ -66,7 +76,7 @@
                             <tr>
                                 <th scope="row">{{ $event->id }}</th>
                                 <td>{{ $event->descricao }}</td>
-                                <td>{{ $event->evento }}</td>
+                                <td>{!! $event->evento !!} {!! $event->status == '0' ? '' : '<span class="text-danger fw-bold">Cancelado</span>' !!}</td>
                                 <td>
                                 <i class="fa-regular fa-calendar-days"></i> {{ \Illuminate\Support\Carbon::parse($event->data)->format('d/m/Y') }} 
                                     <span class="text-secondary">
@@ -75,13 +85,14 @@
                                 </td>
                                 <td><i class="fa-solid fa-location-dot"></i> {{ $event->local }}</td>
                                 <td>
-                                    <a href="{{ route('events') }}">
+                                    <a href="{{ route('event.edit', ['event' => $event->id]) }}">
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
-                                    <a href="">
-                                        <i class="fa-solid fa-ban"></i>
+                                    <a href="{{ route('events.change-status', ['event' => $event->id]) }}">
+                                        {!! $event->status == '0' ? '<i class="fa-solid fa-toggle-off"></i>' : '<i class="fa-solid fa-toggle-on"></i>' !!}
+                                        
                                     </a>
-                                    <a href="">
+                                    <a href="{{ route('event.destroy', ['event' => $event->id]) }}">
                                         <i class="fa-solid fa-x"></i>
                                     </a>
                                 </td>

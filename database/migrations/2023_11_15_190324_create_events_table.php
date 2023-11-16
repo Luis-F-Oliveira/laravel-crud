@@ -19,6 +19,7 @@ return new class extends Migration
             $table->time('horario');
             $table->string('local', 64);
             $table->integer('status');
+            $table->timestamps();
         });
     }
 

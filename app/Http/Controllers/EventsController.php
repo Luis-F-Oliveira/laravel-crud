@@ -8,44 +8,50 @@ use Illuminate\Http\Request;
 
 class EventsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public readonly Events $events;
+    public function __construct()
+    {
+        $this->events = new Events();
+    }
+
     public function index()
     {
-        //
+        $events = $this->events->all();
+        return view('index', ['events' => $events]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'descricao' => 'required',
+            'evento' => 'required',
+            'data' => 'required|date',
+            'horario' => 'required',
+            'local' => 'required',
+            'status' => 'required',
+        ]);
+
+        $this->events::create($request->all());
+
+        return redirect()->route('index')->with('success', 'Evento cadastrado com sucesso!');
     }
 
-    /**
-     * Display the specified resource.
-     */
+    public function changeStatus(Request $request, Events $event)
+    {
+        $newStatus = $event->status == 0 ? 1 : 0;
+        $event->update(['status' => $newStatus]);
+
+        return redirect()->back()->with('success', 'Status alterado com sucesso.');
+    }
+
     public function show(Events $events)
     {
-        //
+        
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Events $events)
     {
-        //
+        
     }
 
     /**
@@ -56,11 +62,15 @@ class EventsController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Events $events)
+    public function destroy(Request $request, $eventId)
     {
-        //
+        $event = $this->events->find($eventId);
+
+        if ($event) {
+            $event->delete();
+            return redirect()->back()->with('success', 'Evento excluído com sucesso.');
+        } else {
+            return redirect()->back()->with('error', 'Evento não encontrado.');
+        }
     }
 }
