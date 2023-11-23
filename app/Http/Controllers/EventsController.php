@@ -44,33 +44,36 @@ class EventsController extends Controller
         return redirect()->back()->with('success', 'Status alterado com sucesso.');
     }
 
-    public function show(Events $events)
+    public function edit(string $id)
     {
-        
-    }
+        $event = $this->events->find($id);
 
-    public function edit(Events $events)
-    {
-        
+        return view('edit', compact('event'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Events $events)
+    public function update(Request $request, string $id)
     {
-        //
+        $updated = $this->events->where('id', $id)->update($request->except('_token', '_method'));
+        
+        if ($updated) {
+            return redirect()->route('index')->with('success', 'Evento atualizado com sucesso.');
+        }
+
+        return redirect()->back()->with('error', 'Evento não atualizado.');
     }
 
-    public function destroy(Request $request, $eventId)
+    public function destroy(Request $request, $event)
     {
-        $event = $this->events->find($eventId);
+        $events = $this->events->find($event);
 
-        if ($event) {
-            $event->delete();
+        if ($events) {
+            $events->delete();
             return redirect()->back()->with('success', 'Evento excluído com sucesso.');
-        } else {
-            return redirect()->back()->with('error', 'Evento não encontrado.');
         }
+
+        return redirect()->back()->with('error', 'Evento não encontrado.');
     }
 }

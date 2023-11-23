@@ -23,24 +23,26 @@
                 </div>
             </div>
             <div class="container rounded bg-white py-3 position-relative shadow-sm" style="top: 50%; transform: translateY(-50%);">
-                <form>
+                <form id="search-form">
                     @csrf
                     <div class="row">
                         <div class="col-4">
                             <label for="select-types">
                                 BUSCAR POR
                             </label>
-                            <select class="form-select" id="select-types" aria-label="Default select example">
+                            <select class="form-select" id="select-types" aria-label="Default select example" name="escolha_busca">
                                 <option value="0">ID</option>
                                 <option value="1">DESCRIÇÕES</option>
                                 <option value="2">EVENTOS</option>
-                                <option value="3">DATAS</option>
+                                <option value="3">DATAS E HORÁRIO</option>
                                 <option value="4">LOCAIS</option>
                             </select>
                         </div>
-                        <div class="col">
-                            <label for=""></label>
-                            <p>em obras</p>
+                        <div class="col mt-4 input-group">
+                            <input type="text" class="form-control" name="busca" id="pesquisa" aria-label="Recipient's username" aria-describedby="submit">
+                            <button class="btn btn-outline-primary" type="submit" id="submit">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -59,7 +61,7 @@
                 @if($events->isEmpty())
                    <h1>Nenhum evento encontrado.</h1>
                 @else
-                    <table class="table">
+                    <table class="table" id="data-table">
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
@@ -74,7 +76,7 @@
                             
                         @forelse ($events as $event)
                             <tr>
-                                <th scope="row">{{ $event->id }}</th>
+                                <td scope="row"><strong>{{ $event->id }}</strong></th>
                                 <td>{{ $event->descricao }}</td>
                                 <td>{!! $event->evento !!} {!! $event->status == '0' ? '' : '<span class="text-danger fw-bold">Cancelado</span>' !!}</td>
                                 <td>
@@ -84,17 +86,22 @@
                                     </span>
                                 </td>
                                 <td><i class="fa-solid fa-location-dot"></i> {{ $event->local }}</td>
-                                <td>
-                                    <a href="{{ route('event.edit', ['event' => $event->id]) }}">
+                                <td class="d-flex align-items-center">
+                                    <a href="{{ route('events.edit', ['event' => $event->id]) }}">
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
                                     <a href="{{ route('events.change-status', ['event' => $event->id]) }}">
                                         {!! $event->status == '0' ? '<i class="fa-solid fa-toggle-off"></i>' : '<i class="fa-solid fa-toggle-on"></i>' !!}
                                         
                                     </a>
-                                    <a href="{{ route('event.destroy', ['event' => $event->id]) }}">
-                                        <i class="fa-solid fa-x"></i>
-                                    </a>
+                                    <form action="{{ route('events.destroy', ['event' => $event->id]) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button class="btn p-0" type="submit">
+                                            <i class="fa-solid fa-x"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty
@@ -109,6 +116,7 @@
         </div>
 
         <script src="https://kit.fontawesome.com/8c4de67f84.js"></script>
+        <script src="{{ asset('js/search.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

@@ -5,4 +5,6 @@ use App\Http\Controllers\EventsController;
 
 Route::get('/', [EventsController::class, 'index'])->name('index');
 Route::get('/events/{event}/change-status', [EventsController::class, 'changeStatus'])->name('events.change-status');
-Route::resource('event', EventsController::class);
+Route::resource('events', EventsController::class)->except([
+    'show'
+]);

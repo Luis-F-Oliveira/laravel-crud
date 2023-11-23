@@ -27,7 +27,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('event.store') }}" method="post">
+                <form action="{{ route('events.store') }}" method="post">
                     @csrf
                     <div class="row mb-3">
                         <div class="col">
